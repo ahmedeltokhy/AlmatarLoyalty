@@ -11,7 +11,7 @@ class CreateTransactionsTable extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->decimal('amount', 15, 2);
-            $table->string('status')->nullable();
+            $table->string('status')->nullable()->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

@@ -1,5 +1,5 @@
 <?php
-
+use Illuminate\Support\Facades\Route;
 Route::redirect('/', '/login');
 Route::get('/home', function () {
     if (session('status')) {
@@ -27,6 +27,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
 
     // Transactions
     Route::resource('transactions', 'TransactionController', ['except' => ['destroy']]);
+    Route::get('confirm/{id}','TransactionController@confirm')->name('transactions.confirm');
 });
 Route::group(['prefix' => 'profile', 'as' => 'profile.', 'namespace' => 'Auth', 'middleware' => ['auth']], function () {
 // Change password

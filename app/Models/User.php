@@ -4,15 +4,14 @@ namespace App\Models;
 
 use App\Notifications\VerifyUserNotification;
 use Carbon\Carbon;
+use DateTimeInterface;
 use Hash;
 use Illuminate\Auth\Notifications\ResetPassword;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Str;
-use \DateTimeInterface;
+use Illuminate\Support\Facades\Auth;
 
 class User extends Authenticatable
 {
@@ -42,6 +41,8 @@ class User extends Authenticatable
         'updated_at',
         'deleted_at',
     ];
+
+    protected $appends = ['points'];
 
     protected function serializeDate(DateTimeInterface $date)
     {
@@ -100,5 +101,12 @@ class User extends Authenticatable
     public function roles()
     {
         return $this->belongsToMany(Role::class);
+    }
+
+    public function getPointsAttribute()
+    {
+        $in = Transaction::where('user_to_id',Auth::user()->id)->sum('amount');
+        $out = Transaction::where('user_from_id',Auth::user()->id)->sum('amount');
+        return $in - $out;
     }
 }

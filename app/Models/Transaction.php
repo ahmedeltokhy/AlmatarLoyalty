@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use Carbon\Traits\Date;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use \DateTimeInterface;
 
 class Transaction extends Model
 {
@@ -20,8 +21,8 @@ class Transaction extends Model
     ];
 
     const STATUS_SELECT = [
-        '0'  => 'pending',
-        '1'  => 'confirmed',
+        '0' => 'pending',
+        '1' => 'confirmed',
         '-1' => 'expired',
     ];
 
@@ -34,6 +35,7 @@ class Transaction extends Model
         'updated_at',
         'deleted_at',
     ];
+    protected $appends = ['expired'];
 
     protected function serializeDate(DateTimeInterface $date)
     {
@@ -48,5 +50,11 @@ class Transaction extends Model
     public function user_to()
     {
         return $this->belongsTo(User::class, 'user_to_id');
+    }
+
+    public function getExpiredAttribute()
+    {
+        $created_at =  $this->created_at;
+        return ($created_at->diffInMinutes() > 10);
     }
 }
